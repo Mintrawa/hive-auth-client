@@ -24,7 +24,7 @@ import { keychainCheck, keychainSignBuffer, keychainBroadcast } from './keychain
 /** HIVE */
 import { CUSTOM_JSON, FOLLOWING } from './helpers/hive/custom_json'
 import { 
-  OPERATION, VOTE, ACCOUNT_WITNESS_VOTE, ACCOUNT_WITNESS_PROXY, 
+  OPERATION, CLAIM_ACCOUNT, VOTE, ACCOUNT_WITNESS_VOTE, ACCOUNT_WITNESS_PROXY, 
   TRANSFER, TRANSFER_TO_VESTING, WITHDRAW_VESTING, DELEGATE_VESTING_SHARES, CONVERT 
 } from './helpers/hive'
 
@@ -179,6 +179,20 @@ export const hacManualTransaction = (key_type: "owner"|"active"|"posting"|"memo"
   if(hacModule === "keychain") keychainBroadcast(username, [op], firstCharUpper(key_type) as "Owner"|"Active"|"Posting"|"Memo", keychainDelay)
   /** HAS */
   if(hacModule === "has") sendSignReq(username, { key_type, ops: [op], broadcast: true })
+}
+
+/**
+ * HAC Claim a free account
+ */
+export const hacClaimAccount = (): void => {
+  if(typeof(username) !== "string") throw new Error("No user connected yet")
+
+  const claimAccount: CLAIM_ACCOUNT = [ "claim_account", { fee: "0.000 HIVE", creator: username, extensions: [] } ]
+  if(sessionStorage.getItem("hasmode"))  console.log('%c[HAC Following]', 'color: deeppink', claimAccount)
+  /** Keychain */
+  if(hacModule === "keychain") keychainBroadcast(username, [claimAccount], "Active", keychainDelay)
+  /** HAS */
+  if(hacModule === "has") sendSignReq(username, { key_type: "active", ops: [claimAccount], broadcast: true })
 }
 
 /**

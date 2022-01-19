@@ -12,11 +12,7 @@
 export type CLAIM_ACCOUNT = [
   "claim_account",
   {
-    "fee": {
-      "amount":    string
-      "precision": number
-      "nai":       "@@000000021"
-    },
+    "fee":        string,
     "creator":    string
     "extensions": []
   }
