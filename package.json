@@ -1,0 +1,60 @@
+{
+  "name": "@mintrawa/hive-auth-client",
+  "version": "0.0.1",
+  "description": "Password less users authentication, sign and broadcast transactions for the HIVE Blockchain through HAS & KBE",
+  "main": "lib/index.js",
+  "typings": "lib/index.d.ts",
+  "files": [
+    "dist/*",
+    "lib/*"
+  ],
+  "scripts": {
+    "commit": "git-cz",
+    "release": "standard-version",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc --declaration",
+    "build-browser": "node ./build.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Mintrawa/hive-auth-client.git"
+  },
+  "keywords": [
+    "hive",
+    "hive blockchain",
+    "authentication",
+    "Hive Authentication Services",
+    "Hive Keychain Browser Extension"
+  ],
+  "author": "@mintrawa (https://hive.blog/@mintrawa)",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/Mintrawa/hive-auth-client/issues"
+  },
+  "homepage": "https://github.com/Mintrawa/hive-auth-client#readme",
+  "devDependencies": {
+    "@types/crypto-js": "^4.1.0",
+    "@types/node": "^17.0.5",
+    "@typescript-eslint/eslint-plugin": "^5.8.1",
+    "@typescript-eslint/parser": "^5.8.1",
+    "commitizen": "^4.2.4",
+    "esbuild": "^0.14.9",
+    "eslint": "^8.5.0",
+    "prettier": "^2.5.1",
+    "standard-version": "^9.3.2",
+    "typescript": "^4.5.4"
+  },
+  "dependencies": {
+    "buffer": "^6.0.3",
+    "crypto-js": "^4.1.1",
+    "rxjs": "^7.5.1"
+  },
+  "contributors": [
+    "@mintrawa (https://hive.blog/@mintrawa)"
+  ],
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  }
+}
