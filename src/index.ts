@@ -41,7 +41,7 @@ const firstCharUpper = (value: string): string => {
 
 /** Default value */
 let keychainDelay = 200
-let module: HAC_MODULE = "has"
+let hacModule: HAC_MODULE = "has"
 
 /** HAC accouts history */
 let hacAccounts: HAC_PREVIOUS_CONNECTION[] = []
@@ -96,7 +96,7 @@ export const hacGetAccounts = (account?: string, pwd?: string): HAC_PREVIOUS_CON
         hasSetAccount(lycos)
         username = lycos.account
       }
-      if(lycos && lycos.hkc) module = "keychain"
+      if(lycos && lycos.hkc) hacModule = "keychain"
       return [hasGetAccount()]
     } else {
       return hacAccounts
@@ -148,14 +148,14 @@ export const hacUserAuth = (account: string, app: HAS_APP, pwd: string, challeng
 
     /** Retrieve account if known */
     const a = hacGetAccounts(account)
-    if(a.length === 1 && a[0].hkc) module = "keychain"
-    if(m) module = m
+    if(a.length === 1 && a[0].hkc) hacModule = "keychain"
+    if(m) hacModule = m
 
     /** Auth by Hive Keychain */
-    if(module === "keychain") keychainSignBuffer(account, challenge.value, firstCharUpper(challenge.key_type) as "Owner"|"Active"|"Posting"|"Memo", keychainDelay)
+    if(hacModule === "keychain") keychainSignBuffer(account, challenge.value, firstCharUpper(challenge.key_type) as "Owner"|"Active"|"Posting"|"Memo", keychainDelay)
 
     /** Auth by HAS */
-    if(module === "has") hasSendAuthReq(account, app, challenge)
+    if(hacModule === "has") hasSendAuthReq(account, app, challenge)
   } catch (e) {
     hacMsg.next({ type: "authentication", error: { msg: e instanceof Error ? e.message : 'error' } })
   }
@@ -176,9 +176,9 @@ export const hacManualTransaction = (key_type: "owner"|"active"|"posting"|"memo"
   if(typeof(key_type) !== "string" && !["owner","active","posting"].includes(key_type)) throw new Error('Not a valid key_type')
   if(sessionStorage.getItem("hasmode"))  console.log('%c[HAC Following]', 'color: deeppink', op)
   /** Keychain */
-  if(module === "keychain") keychainBroadcast(username, [op], firstCharUpper(key_type) as "Owner"|"Active"|"Posting"|"Memo", keychainDelay)
+  if(hacModule === "keychain") keychainBroadcast(username, [op], firstCharUpper(key_type) as "Owner"|"Active"|"Posting"|"Memo", keychainDelay)
   /** HAS */
-  if(module === "has") sendSignReq(username, { key_type, ops: [op], broadcast: true })
+  if(hacModule === "has") sendSignReq(username, { key_type, ops: [op], broadcast: true })
 }
 
 /**
@@ -194,9 +194,9 @@ export const hacFollowing = (following: string, follow: boolean): void => {
   const custom_json: CUSTOM_JSON = [ "custom_json", { id: 'follow', json: JSON.stringify(json), required_auths: [], required_posting_auths: [ username ] } ]
   if(sessionStorage.getItem("hasmode"))  console.log('%c[HAC Following]', 'color: deeppink', custom_json)
   /** Keychain */
-  if(module === "keychain") keychainBroadcast(username, [custom_json], "Posting", keychainDelay)
+  if(hacModule === "keychain") keychainBroadcast(username, [custom_json], "Posting", keychainDelay)
   /** HAS */
-  if(module === "has") sendSignReq(username, { key_type: "posting", ops: [custom_json], broadcast: true })
+  if(hacModule === "has") sendSignReq(username, { key_type: "posting", ops: [custom_json], broadcast: true })
 }
 
 /**
@@ -213,9 +213,9 @@ export const hacVote = (author: string, permlink: string, weight: number): void 
   const vote: VOTE = [ "vote", { voter: username, author, permlink, weight: weight * 100 } ]
   if(sessionStorage.getItem("hasmode"))  console.log('%c[HAC Vote]', 'color: deeppink', vote)
   /** Keychain */
-  if(module === "keychain") keychainBroadcast(username, [vote], "Posting", keychainDelay)
+  if(hacModule === "keychain") keychainBroadcast(username, [vote], "Posting", keychainDelay)
   /** HAS */
-  if(module === "has") sendSignReq(username, { key_type: "posting", ops: [vote], broadcast: true })
+  if(hacModule === "has") sendSignReq(username, { key_type: "posting", ops: [vote], broadcast: true })
 }
 
 /*****************************
@@ -241,9 +241,9 @@ export const hacTransfer = (to: string, amount: string, currency: "HIVE"|"HBD", 
   const transfer: TRANSFER = [ "transfer", { from: username, to, amount: amount.concat(" ", currency), memo } ]
   if(sessionStorage.getItem("hasmode"))  console.log('%c[HAC Transfer]', 'color: deeppink', transfer)
   /** Keychain */
-  if(module === "keychain") keychainBroadcast(username, [transfer], "Active", keychainDelay)
+  if(hacModule === "keychain") keychainBroadcast(username, [transfer], "Active", keychainDelay)
   /** HAS */
-  if(module === "has") sendSignReq(username, { key_type: "active", ops: [transfer], broadcast: true })
+  if(hacModule === "has") sendSignReq(username, { key_type: "active", ops: [transfer], broadcast: true })
 }
 
 /**
@@ -259,9 +259,9 @@ export const hacTransferToVesting = (to: string, amount: string): void => {
   const transferToVesting: TRANSFER_TO_VESTING = [ "transfer_to_vesting", { from: username, to, amount: amount+" HIVE" } ]
   if(sessionStorage.getItem("hasmode"))  console.log('%c[HAC Transfer To Vesting]', 'color: deeppink', transferToVesting)
   /** Keychain */
-  if(module === "keychain") keychainBroadcast(username, [transferToVesting], "Active", keychainDelay)
+  if(hacModule === "keychain") keychainBroadcast(username, [transferToVesting], "Active", keychainDelay)
   /** HAS */
-  if(module === "has") sendSignReq(username, { key_type: "active", ops: [transferToVesting], broadcast: true })
+  if(hacModule === "has") sendSignReq(username, { key_type: "active", ops: [transferToVesting], broadcast: true })
 }
 
 /**
@@ -275,9 +275,9 @@ export const hacWithdrawVesting = (vesting_shares: string): void => {
   const withdrawVesting: WITHDRAW_VESTING = [ "withdraw_vesting", { account: username, vesting_shares } ]
   if(sessionStorage.getItem("hasmode"))  console.log('%c[HAC Withdraw Vesting]', 'color: deeppink', withdrawVesting)
   /** Keychain */
-  if(module === "keychain") keychainBroadcast(username, [withdrawVesting], "Active", keychainDelay)
+  if(hacModule === "keychain") keychainBroadcast(username, [withdrawVesting], "Active", keychainDelay)
   /** HAS */
-  if(module === "has") sendSignReq(username, { key_type: "active", ops: [withdrawVesting], broadcast: true })
+  if(hacModule === "has") sendSignReq(username, { key_type: "active", ops: [withdrawVesting], broadcast: true })
 }
 
 /**
@@ -293,9 +293,9 @@ export const hacDelegation = (delegatee: string, vesting_shares: string): void =
   const delegation: DELEGATE_VESTING_SHARES = [ "delegate_vesting_shares", { delegator: username, delegatee, vesting_shares } ]
   if(sessionStorage.getItem("hasmode"))  console.log('%c[HAC Delegation]', 'color: deeppink', delegation)
   /** Keychain */
-  if(module === "keychain") keychainBroadcast(username, [delegation], "Active", keychainDelay)
+  if(hacModule === "keychain") keychainBroadcast(username, [delegation], "Active", keychainDelay)
   /** HAS */
-  if(module === "has") sendSignReq(username, { key_type: "active", ops: [delegation], broadcast: true })
+  if(hacModule === "has") sendSignReq(username, { key_type: "active", ops: [delegation], broadcast: true })
 }
 
 /**
@@ -311,9 +311,9 @@ export const hacConvert = (amount: string, currency: "HIVE"|"HBD"): void => {
   const convert: CONVERT = [ currency === "HBD" ? "convert" : "collateralized_convert", { owner: username, requestid, amount: amount.concat(" ", currency) } ]
   if(sessionStorage.getItem("hasmode"))  console.log('%c[HAC Convert]', 'color: deeppink', convert)
   /** Keychain */
-  if(module === "keychain") keychainBroadcast(username, [convert], "Active", keychainDelay)
+  if(hacModule === "keychain") keychainBroadcast(username, [convert], "Active", keychainDelay)
   /** HAS */
-  if(module === "has") sendSignReq(username, { key_type: "active", ops: [convert], broadcast: true })
+  if(hacModule === "has") sendSignReq(username, { key_type: "active", ops: [convert], broadcast: true })
 }
 
 /*****************************
@@ -335,9 +335,9 @@ export const hacWitnessVote = (witness: string, approve: boolean): void => {
   const witnessVote: ACCOUNT_WITNESS_VOTE = [ "account_witness_vote", { account: username, witness, approve } ]
   if(sessionStorage.getItem("hasmode"))  console.log('%c[HAC Vote Witness]', 'color: deeppink', witnessVote)
   /** Keychain */
-  if(module === "keychain") keychainBroadcast(username, [witnessVote], "Active", keychainDelay)
+  if(hacModule === "keychain") keychainBroadcast(username, [witnessVote], "Active", keychainDelay)
   /** HAS */
-  if(module === "has") sendSignReq(username, { key_type: "active", ops: [witnessVote], broadcast: true })
+  if(hacModule === "has") sendSignReq(username, { key_type: "active", ops: [witnessVote], broadcast: true })
 }
 
 /**
@@ -351,9 +351,9 @@ export const hacWitnessProxy = (proxy: string): void => {
   const witnessProxy: ACCOUNT_WITNESS_PROXY = [ "account_witness_proxy", { account: username, proxy } ]
   if(sessionStorage.getItem("hasmode"))  console.log('%c[HAC Witness Proxy]', 'color: deeppink', witnessProxy)
   /** Keychain */
-  if(module === "keychain") keychainBroadcast(username, [witnessProxy], "Active", keychainDelay)
+  if(hacModule === "keychain") keychainBroadcast(username, [witnessProxy], "Active", keychainDelay)
   /** HAS */
-  if(module === "has") sendSignReq(username, { key_type: "active", ops: [witnessProxy], broadcast: true })
+  if(hacModule === "has") sendSignReq(username, { key_type: "active", ops: [witnessProxy], broadcast: true })
 }
 
 export { hasGetConnectionStatus } from "./has"
