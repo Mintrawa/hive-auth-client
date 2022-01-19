@@ -47,7 +47,8 @@
   "dependencies": {
     "buffer": "^6.0.3",
     "crypto-js": "^4.1.1",
-    "rxjs": "^7.5.1"
+    "rxjs": "^7.5.1",
+    "uuid": "^8.3.2"
   },
   "contributors": [
     "@mintrawa (https://hive.blog/@mintrawa)"
