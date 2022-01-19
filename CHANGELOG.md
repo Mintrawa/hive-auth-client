@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.3](https://github.com/Mintrawa/hive-auth-client/compare/v0.0.2...v0.0.3) (2022-01-19)
+
+
+### Bug Fixes
+
+* **hacmodule:** replace "module" by "hacModule" ([b6ccf56](https://github.com/Mintrawa/hive-auth-client/commit/b6ccf564832b519dbea5ad359e3cc6f1f44775cd))
+
 ### 0.0.2 (2022-01-19)
 
 
