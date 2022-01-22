@@ -97,7 +97,7 @@ export const hacGetAccounts = (account?: string, pwd?: string): HAC_PREVIOUS_CON
         username = lycos.account
       }
       if(lycos && lycos.hkc) hacModule = "keychain"
-      return [hasGetAccount()]
+      return hasGetAccount() ? [hasGetAccount()] : []
     } else {
       return hacAccounts
     }

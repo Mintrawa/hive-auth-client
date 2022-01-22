@@ -24,7 +24,8 @@
     "hive blockchain",
     "authentication",
     "Hive Authentication Services",
-    "Hive Keychain Browser Extension"
+    "Hive Keychain Browser Extension",
+    "Hive Authentication Client"
   ],
   "author": "@mintrawa (https://hive.blog/@mintrawa)",
   "license": "GPL-3.0-or-later",
@@ -35,6 +36,7 @@
   "devDependencies": {
     "@types/crypto-js": "^4.1.0",
     "@types/node": "^17.0.5",
+    "@types/uuid": "^8.3.4",
     "@typescript-eslint/eslint-plugin": "^5.8.1",
     "@typescript-eslint/parser": "^5.8.1",
     "commitizen": "^4.2.4",
