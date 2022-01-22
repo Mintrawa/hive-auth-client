@@ -29,6 +29,7 @@ let socket$: WebSocketSubject<any>
 /** HAS default servers */
 let has = ["wss://hive-auth.arcange.eu"]
 let hasIndex = 0
+let hasTry = 0
 
 /** HAS status */
 let hasStatus: HAS_STATUS
@@ -88,6 +89,7 @@ export const HiveAuthService = (hasServers?:string[]): void => {
         /** Connected to the HAS */
         case 'connected':
           hasSetConnectedStatus(recv_msg as HAS_CONNECTED_MSG)
+          hasTry = 0
           break
 
         /** Waiting validation by the PKSA */
@@ -131,12 +133,15 @@ export const HiveAuthService = (hasServers?:string[]): void => {
     },
     /** Restart websocket if error (try another HAS server if available) */
     error: () => {
+      hasTry++
       if(hasStatus) hasStatus.status = "disconnected"
       if(sessionStorage.getItem("hasmode")) console.log('%c[HAS] error websocket!', 'color: crimson')
       hasIndex = typeof(has[hasIndex++]) === "string" ? hasIndex++ : 0
-      setTimeout(() => {
-        HiveAuthService()
-      }, 250)
+      if(hasTry < 10) {
+        setTimeout(() => {
+          HiveAuthService()
+        }, 250)
+      }
     },
     complete: () => {
       hasStatus.status = "disconnected"
