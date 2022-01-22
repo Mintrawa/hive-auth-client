@@ -1,10 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/**
- * MESSAGES TYPES
- */
+
+import { HAS_STATUS } from "./has"
 
 /** HAC_MODULE */
 export type HAC_MODULE = "has"|"keychain"
+
+/** HAC_STATUS */
+export type HAC_STATUS = {
+  keychain: boolean,
+  has: HAS_STATUS|null
+}
 
 /** HAC_PREVIOUS_CONNECTIONS */
 export type HAC_PREVIOUS_CONNECTION = {

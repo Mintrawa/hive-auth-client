@@ -132,29 +132,32 @@ hacMsg.unsubscribe()
 
 ### Main
 
-#### hasGetConnectionStatus()
+#### hacGetConnectionStatus()
 
-Retrieve the connection status to the Hive Authentication Services (HAS)
+Retrieve the status of keychain and the connection status to the Hive Authentication Services (HAS)
 
 ##### Usage
 
 ```ts
-import { hasGetConnectionStatus } from "@mintrawa/hive-auth-client"
+import { hacGetConnectionStatus } from "@mintrawa/hive-auth-client"
 
 /** [HAS] Get the status of the connection */
-hasGetConnectionStatus()
+hacGetConnectionStatus()
 ```
 
 ##### Result
 ```ts
 {
-  "status": "connected"|"disconnected"
-  "ping_rate": number
-  "protocol": number
-  "server": string
-  "socketid": string
-  "timeout": number
-  "version": string
+  "keychain": boolean
+  "has": {
+    "status": "connected"|"disconnected"
+    "ping_rate": number
+    "protocol": number
+    "server": string
+    "socketid": string
+    "timeout": number
+    "version": string
+  }
 }
 ```
 

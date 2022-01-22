@@ -7,19 +7,19 @@ import AES        from 'crypto-js/aes'
 
 /** Hive Authentication Client */
 import {
-  HAC_MODULE, HAC_PREVIOUS_CONNECTION, HAC_MESSAGE
+  HAC_MODULE, HAC_STATUS, HAC_PREVIOUS_CONNECTION, HAC_MESSAGE
 } from './helpers/hac'
 
 /** Hive Authentication Service */
 import { 
-  HiveAuthService, hasSendAuthReq, hasSetAccount, hasGetAccount, sendSignReq
+  HiveAuthService, hasGetConnectionStatus, hasSendAuthReq, hasSetAccount, hasGetAccount, sendSignReq
 } from './has'
 import { 
   HAS_APP
 } from './helpers/has'
 
 /** Hive Keychain */
-import { keychainCheck, keychainSignBuffer, keychainBroadcast } from './keychain'
+import { keychainCheck, keychain, keychainSignBuffer, keychainBroadcast } from './keychain'
 
 /** HIVE */
 import { CUSTOM_JSON, FOLLOWING } from './helpers/hive/custom_json'
@@ -71,6 +71,14 @@ export const HiveAuthClient = (hasServer?:string[], options?: { debug?:boolean, 
 
   /** Check Hive Keychain browser extension */
   keychainCheck(keychainDelay)
+}
+
+export const hacGetConnectionStatus = (): HAC_STATUS => {
+  const status:HAC_STATUS = {
+    keychain,
+    has: hasGetConnectionStatus()
+  }
+  return status
 }
 
 /**
