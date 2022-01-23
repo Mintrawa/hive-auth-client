@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.5](https://github.com/Mintrawa/hive-auth-client/compare/v0.0.4...v0.0.5) (2022-01-23)
+
+
+### Features
+
+* **hacgetconnectionstatus:** depreciate  hasGetConnectionStatus in favor of hacGetConnectionStatus ([05bb714](https://github.com/Mintrawa/hive-auth-client/commit/05bb714ab86c9d8f3c6c70d06c4d857152d0c335))
+* **hastry:** limit to 10 the attempt to connect to has server ([45f980f](https://github.com/Mintrawa/hive-auth-client/commit/45f980f5a7f6b9fb1ee9f4ae3846e48561154f2c))
+
+
+### Bug Fixes
+
+* **challenge:** rename chalenge to challenge + replace ?. by if ([37d9626](https://github.com/Mintrawa/hive-auth-client/commit/37d96269715a64e3092e7ab81b0daab7e018d3ab))
+* **hacgetaccounts:** test the return of hasGetAccount() ([4691aab](https://github.com/Mintrawa/hive-auth-client/commit/4691aab7ec13ebbd66133248092e188eb4099114))
+
 ### [0.0.4](https://github.com/Mintrawa/hive-auth-client/compare/v0.0.3...v0.0.4) (2022-01-19)
 
 
