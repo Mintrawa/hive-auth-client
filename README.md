@@ -241,7 +241,7 @@ hacUserAuth("mintrawa", { name: 'HACtutorial' }, "MyPa$$w0rd", { key_type: 'acti
   msg?: {
     status: "authentified"|"rejected"
     data?: {
-      chalenge:    string
+      challenge:    string
       has_token?:  string
       has_expire?: number
       has_server?: string

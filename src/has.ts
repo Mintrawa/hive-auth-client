@@ -211,6 +211,7 @@ const recvAuthAck = (recv_msg: HAS_AUTH_ACK_MSG): void => {
   try {
     /** decode the encrypted data */
     const data: HAS_DECODED_AUTH_ACK = JSON.parse(AES.decrypt(recv_msg.data, hasKey).toString(CryptoJS.enc.Utf8))
+    const challenge = data.challenge ? data.challenge.challenge : ''
 
     /** [HAC MSG] Emit an authentication msg */
     hacMsg.next({
@@ -218,7 +219,7 @@ const recvAuthAck = (recv_msg: HAS_AUTH_ACK_MSG): void => {
       msg:  {
         status: "authentified",
         data: {
-          chalenge:   data.challenge?.challenge,
+          challenge,
           has_token:  data.token,
           has_expire: data.expire,
           has_server: has[hasIndex]
@@ -280,11 +281,12 @@ const recvAuthNack = (recv_msg: HAS_AUTH_NACK_MSG): void => {
 export const sendSignReq = (account: string, ops: { key_type: "owner"|"active"|"posting"|"memo", ops: any, broadcast: boolean }): void => {
   if(!socket$) throw new Error(`No connection to HAS`)
   if(!hasAccount || !hasAccount.account || hasAccount.account !== account) throw new Error(`Account not match the HAS account`)
-  if(!hasAccount.has?.has_token) throw new Error(`No token to use with HAS`)
+  if(hasAccount.has && !hasAccount.has.has_token) throw new Error(`No token to use with HAS`)
   if(!hasKey) throw new Error(`No auth_key to use with HAS`)
 
   const enc     = AES.encrypt(JSON.stringify(ops), hasKey).toString()
-  const ops_req = { cmd: "sign_req", account, token: hasAccount.has?.has_token, data: enc }
+  const token   = hasAccount.has ? hasAccount.has.has_token : ''
+  const ops_req = { cmd: "sign_req", account, token, data: enc }
   if(sessionStorage.getItem("hasmode")) console.log('%c[HAS SEND]', 'color: dodgerblue', ops_req)
   socket$.next(ops_req)
 }

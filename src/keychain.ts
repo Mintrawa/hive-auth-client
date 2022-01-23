@@ -54,7 +54,7 @@ export const keychainSignBuffer = (account: string, msg: string, key: "Owner"|"A
           msg: {
             status: "authentified",
             data: {
-              chalenge: response.result
+              challenge: response.result
             }
           }
         }
@@ -65,7 +65,7 @@ export const keychainSignBuffer = (account: string, msg: string, key: "Owner"|"A
           msg: {
             status: "rejected",
             data: {
-              chalenge: response.message
+              challenge: response.message
             }
           }
         }
