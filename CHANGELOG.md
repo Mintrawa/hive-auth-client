@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.6](https://github.com/Mintrawa/hive-auth-client/compare/v0.0.5...v0.0.6) (2022-01-29)
+
+
+### Features
+
+* **adding:** adding functions hacRemoveAccount, hacCheckPassword ([3eb724e](https://github.com/Mintrawa/hive-auth-client/commit/3eb724e824c30f8a64c2bd0a2771667168c94504))
+* **challenge:** add challenge to HAC_PREVIOUS_CONNECTION ([7053066](https://github.com/Mintrawa/hive-auth-client/commit/705306696c17c8faf8801b374b58b591ae929936))
+
 ### [0.0.5](https://github.com/Mintrawa/hive-auth-client/compare/v0.0.4...v0.0.5) (2022-01-23)
 
 
