@@ -88,36 +88,48 @@ export const hacGetConnectionStatus = (): HAC_STATUS => {
  * @returns HAC_PREVIOUS_CONNECTION[]
  */
 export const hacGetAccounts = (account?: string, pwd?: string): HAC_PREVIOUS_CONNECTION[] => {
-  if(pwd && typeof(pwd) !== "string") throw new Error("Password need to be a string")
-  if(!pwd && typeof(hacPwd) !== "string") throw new Error("No Password yet")
-  if(account && typeof(account) !== "string") throw new Error("Account is not a valid string")
+  try {
+    if(pwd && typeof(pwd) !== "string") throw new Error("Password need to be a string")
+    if(!pwd && typeof(hacPwd) !== "string") throw new Error("No Password yet")
+    if(account && typeof(account) !== "string") throw new Error("Account is not a valid string")
 
-  if(pwd) hacPwd = pwd
+    /** if password OK */
+    if(hacCheckPwd(pwd ? pwd : hacPwd)) {
+      if(pwd) hacPwd = pwd
 
-  const a = localStorage.getItem('hac') ? localStorage.getItem('hac') : undefined
-  if(a) {
-    hacAccounts = JSON.parse(AES.decrypt(a, hacPwd).toString(CryptoJS.enc.Utf8))
-    if(sessionStorage.getItem("hasmode"))  console.log('%c[HAC Accounts]', 'color: deeppink', hacAccounts)
-    if(account) {
-      const lycos = hacAccounts.find(a => a.account === account)
-      if(lycos) {
-        hasSetAccount(lycos)
-        username = lycos.account
+      /** Decrypt Accounts */
+      const a = localStorage.getItem('hac') ? localStorage.getItem('hac') : undefined
+      hacAccounts = a ? JSON.parse(AES.decrypt(a.substring(64), hacPwd).toString(CryptoJS.enc.Utf8)) : []
+
+      if(sessionStorage.getItem("hasmode"))  console.log('%c[HAC Accounts]', 'color: deeppink', hacAccounts)
+
+      /** If search specific account */
+      if(account) {
+        const lycos = hacAccounts.find(a => a.account === account)
+        if(lycos) {
+          hasSetAccount(lycos)
+          username = lycos.account
+        }
+        if(lycos && lycos.hkc) hacModule = "keychain"
+        return hasGetAccount() ? [hasGetAccount()] : []
+      /** Return all accounts */
+      } else {
+        return hacAccounts
       }
-      if(lycos && lycos.hkc) hacModule = "keychain"
-      return hasGetAccount() ? [hasGetAccount()] : []
     } else {
-      return hacAccounts
+      localStorage.removeItem('hac')
+      return []
     }
-  } else {
+  } catch (e) {
+    if(sessionStorage.getItem("hasmode")) console.error(e)
     return []
   }
 }
 
 /**
  * [HAC] Add or Update account
- * @param account 
- * @param pwd 
+ * @param { HAC_PREVIOUS_CONNECTION } account 
+ * @returns void
  */
 export const hacAddAccount = (account: HAC_PREVIOUS_CONNECTION): void => {
   if(typeof(hacPwd) !== "string") throw new Error("No Password yet")
@@ -132,7 +144,73 @@ export const hacAddAccount = (account: HAC_PREVIOUS_CONNECTION): void => {
   }
 
   const enc = AES.encrypt(JSON.stringify(hacAccounts), hacPwd).toString()
-  localStorage.setItem('hac', enc)
+  const hmac = CryptoJS.HmacSHA256(enc, CryptoJS.SHA256(hacPwd)).toString()
+  localStorage.setItem('hac', hmac+enc)
+}
+
+/**
+ * [HAC] Remove an account
+ * @param { string } account 
+ * @param { string } [pwd] 
+ * @returns boolean
+ */
+ export const hacRemoveAccount = (account: string, pwd?: string): boolean => {
+  try {
+    if(pwd && typeof(pwd) !== "string") throw new Error("Password need to be a string")
+    if(!pwd && typeof(hacPwd) !== "string") throw new Error("No Password yet")
+    if(account && typeof(account) !== "string") throw new Error("Account is not a valid string")
+
+    /** if password OK */
+    if(hacCheckPwd(pwd ? pwd : hacPwd)) {
+      if(pwd) hacPwd = pwd
+      /** Decrypt Accounts */
+      const a = localStorage.getItem('hac') ? localStorage.getItem('hac') : undefined
+      hacAccounts = a ? JSON.parse(AES.decrypt(a, hacPwd).toString(CryptoJS.enc.Utf8)) : []
+      if(sessionStorage.getItem("hasmode"))  console.log('%c[HAC Accounts]', 'color: deeppink', hacAccounts)
+      const lycos = hacAccounts.findIndex(a => a.account === account)
+      hacAccounts.splice(lycos, 1)
+      return true
+    } else {
+      return false
+    }    
+  } catch (e) {
+    if(sessionStorage.getItem("hasmode")) console.error(e)
+    throw new Error("Something went wrong when tryin to remove the account")
+  }
+}
+
+/**
+ * [HAC] Check password
+ * @param { string } pwd
+ * @returns boolean
+ */
+export const hacCheckPwd = (pwd: string): boolean => {
+  try {
+    if(pwd && typeof(pwd) !== "string") throw new Error("Password need to be a string")
+  
+    /** Retrieve accounts stored */
+    const a = localStorage.getItem('hac') ? localStorage.getItem('hac') : undefined
+    if(a) {
+      /** Check HMAC */
+      const hmac = a.substring(0, 64)
+      const enc  = a.substring(64)
+      const decryptedhmac = CryptoJS.HmacSHA256(enc, CryptoJS.SHA256(pwd ? pwd : hacPwd)).toString()
+      /** HMAC not match the reference HMAC */
+      if(decryptedhmac !== hmac) {
+        return false
+      /** Both HMAC match */
+      } else {
+        return true
+      }
+    /** No accounts stored yet */
+    } else {
+      throw new Error("No accounts stored yet")
+    }
+  /** Something went wrong */
+  } catch (e) {
+    if(sessionStorage.getItem("hasmode")) console.error(e)
+    throw new Error("Something went wrong with the password check")
+  }
 }
 
 /**
@@ -151,12 +229,16 @@ export const hacUserAuth = (account: string, app: HAS_APP, pwd: string, challeng
     if(typeof(challenge.value) !== "string") throw new Error("Challenge value need to be a string")
     if(!challenge.key_type || (challenge.key_type !== "active" && challenge.key_type !== "posting")) throw new Error('Key value need to be "posting" or "active"')
 
-    /** Assign the HAC password */
-    hacPwd = pwd
+    /** if previous */
+    if(localStorage.getItem('hac')) {
+      /** Retrieve account if known */
+      const a = hacGetAccounts(account, pwd)
+      if(a.length === 1 && a[0].hkc) hacModule = "keychain"
+    } else {
+      if(pwd) hacPwd = pwd
+    }
 
-    /** Retrieve account if known */
-    const a = hacGetAccounts(account)
-    if(a.length === 1 && a[0].hkc) hacModule = "keychain"
+    /** If force module */
     if(m) hacModule = m
 
     /** Auth by Hive Keychain */
