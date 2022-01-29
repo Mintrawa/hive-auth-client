@@ -35,6 +35,7 @@ let hasTry = 0
 let hasStatus: HAS_STATUS
 
 let hasAccount: HAC_PREVIOUS_CONNECTION
+let hasPreAuth: { account: string, challenge: string }
 
 let uuid:string
 let expire: number
@@ -174,10 +175,7 @@ export const hasSendAuthReq = ( account: string, app: HAS_APP, challenge: { key_
   if(sessionStorage.getItem("hasmode")) console.log('%c[HAS SEND]', 'color: dodgerblue', auth_req)
   socket$.next(auth_req)
 
-  hasSetAccount({
-    account,
-    hkc: false
-  })
+  hasPreAuth = { account, challenge: challenge.value }
 }
  
 /**
@@ -228,14 +226,20 @@ const recvAuthAck = (recv_msg: HAS_AUTH_ACK_MSG): void => {
     })
 
     /** Update hasAccount */
-    hasAccount.has = {
-      auth_key:   hasKey,
-      has_token:  data.token,
-      has_expire: data.expire,
-      has_server: has[hasIndex]
-    }
-    hacAddAccount(hasAccount)
-    
+    hacAddAccount({
+      account: hasPreAuth.account,
+      has: {
+        auth_key:   hasKey,
+        has_token:  data.token,
+        has_expire: data.expire,
+        has_server: has[hasIndex]
+      },
+      hkc: false,
+      challenge: {
+        value: hasPreAuth.challenge,
+        signature: challenge
+      }
+    })
   } catch (e) {
     if(sessionStorage.getItem("hasmode")) console.error(e)
     const msg = e instanceof Error ? e.message : "Error Authentication ack (auth_ack)"

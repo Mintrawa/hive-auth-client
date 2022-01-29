@@ -20,7 +20,11 @@ export type HAC_PREVIOUS_CONNECTION = {
     has_expire: number
     has_server: string
   },
-  hkc: boolean
+  hkc: boolean,
+  challenge: {
+    value: string
+    signature: string
+  }
 }
 
 /** HAC_KEYCHAIN_STATUS */

@@ -48,7 +48,7 @@ export const keychainSignBuffer = (account: string, msg: string, key: "Owner"|"A
       if(sessionStorage.getItem("hasmode")) console.log('%c[KEYCHAIN Sign Buffer]', 'color: blueviolet', response)
       if(response.success) {
         const a = hasGetAccount()
-        if(!a) hacAddAccount({ account, hkc: true })
+        if(!a) hacAddAccount({ account, hkc: true, challenge: { value: msg, signature: response.result } })
         const authentified: HAC_MSG_AUTHENTICATION = {
           type: "authentication",
           msg: {
@@ -77,12 +77,11 @@ export const keychainSignBuffer = (account: string, msg: string, key: "Owner"|"A
  
  /* Request to Broadcast operation */
  export const keychainBroadcast = (account: string, operations:any[], key: "Owner"|"Active"|"Posting"|"Memo", ms: number): void => {
+  if(!hasGetAccount()) throw new Error('User not connected')
   setTimeout(() => {
     (window as any).hive_keychain.requestBroadcast(account, operations, key, (response: BROADCAST) => {
       if(sessionStorage.getItem("hasmode")) console.log('%c[KEYCHAIN Broadcast]', 'color: blueviolet', response)
       if(response.success) {
-        const a = hasGetAccount()
-        if(!a) hacAddAccount({ account, hkc: true })
         const tx_result: HAC_MSG_TX_RESULT = {
           type: "tx_result",
           msg: {

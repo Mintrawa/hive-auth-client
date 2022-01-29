@@ -62,6 +62,7 @@ export const hacMsg = new Subject<HAC_MESSAGE>()
  */
 export const HiveAuthClient = (hasServer?:string[], options?: { debug?:boolean, delay?: number }): void => {
   if(options) {
+    sessionStorage.removeItem("hasmode")
     if(options.debug) sessionStorage.setItem("hasmode", "debug")
     if(options.delay) keychainDelay = options.delay
   }
