@@ -1,6 +1,6 @@
 {
   "name": "@mintrawa/hive-auth-client",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Password less users authentication, sign and broadcast transactions for the HIVE Blockchain through HAS & KBE",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",

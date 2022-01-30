@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.7](https://github.com/Mintrawa/hive-auth-client/compare/v0.0.6...v0.0.7) (2022-01-30)
+
+
+### Bug Fixes
+
+* **switch:** fix switch account, add expire check, refactor hacRemoveAccount, update README ([2dd4c03](https://github.com/Mintrawa/hive-auth-client/commit/2dd4c0306a5bcdf8a3eb08353451ea0bc5f817cf))
+
 ### [0.0.6](https://github.com/Mintrawa/hive-auth-client/compare/v0.0.5...v0.0.6) (2022-01-29)
 
 
