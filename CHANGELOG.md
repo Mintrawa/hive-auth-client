@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.8](https://github.com/Mintrawa/hive-auth-client/compare/v0.0.7...v0.0.8) (2022-01-30)
+
+
+### Bug Fixes
+
+* **keychainsignbuffer:** keychainSignBuffer error when switch account ([634dd42](https://github.com/Mintrawa/hive-auth-client/commit/634dd42d8154cb21503ffe956753fc34acb6c005))
+
 ### [0.0.7](https://github.com/Mintrawa/hive-auth-client/compare/v0.0.6...v0.0.7) (2022-01-30)
 
 
