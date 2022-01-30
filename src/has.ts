@@ -225,7 +225,7 @@ const recvAuthAck = (recv_msg: HAS_AUTH_ACK_MSG): void => {
       }
     })
 
-    /** Update hasAccount */
+    /** Update hacAccount */
     hacAddAccount({
       account: hasPreAuth.account,
       has: {
