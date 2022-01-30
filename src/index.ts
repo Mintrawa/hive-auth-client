@@ -30,7 +30,7 @@ import {
 
 /** Internal fonction */
 const firstCharUpper = (value: string): string => {
-  return value.charAt(0).toUpperCase() + value.slice(1);
+  return value.charAt(0).toUpperCase() + value.slice(1)
 }
 
 /**
@@ -43,7 +43,7 @@ const firstCharUpper = (value: string): string => {
 let keychainDelay = 200
 let hacModule: HAC_MODULE = "has"
 
-/** HAC accouts history */
+/** HAC accounts history */
 let hacAccounts: HAC_PREVIOUS_CONNECTION[] = []
 
 let hacPwd: string
@@ -102,6 +102,15 @@ export const hacGetAccounts = (account?: string, pwd?: string): HAC_PREVIOUS_CON
       const a = localStorage.getItem('hac') ? localStorage.getItem('hac') : undefined
       hacAccounts = a ? JSON.parse(AES.decrypt(a.substring(64), hacPwd).toString(CryptoJS.enc.Utf8)) : []
 
+      /** Check expired for account via HAS and remove them */
+      for (const [i, acc] of hacAccounts.entries()) {
+        if(acc.has && acc.has.has_expire && acc.has.has_expire < Date.now()) hacAccounts.splice(i, 1)
+      }
+
+      const enc = AES.encrypt(JSON.stringify(hacAccounts), hacPwd).toString()
+      const hmac = CryptoJS.HmacSHA256(enc, CryptoJS.SHA256(hacPwd)).toString()
+      localStorage.setItem('hac', hmac+enc)
+
       if(sessionStorage.getItem("hasmode"))  console.log('%c[HAC Accounts]', 'color: deeppink', hacAccounts)
 
       /** If search specific account */
@@ -111,7 +120,11 @@ export const hacGetAccounts = (account?: string, pwd?: string): HAC_PREVIOUS_CON
           hasSetAccount(lycos)
           username = lycos.account
         }
-        if(lycos && lycos.hkc) hacModule = "keychain"
+        if(lycos && lycos.hkc) {
+          hacModule = "keychain"
+        } else {
+          hacModule = "has"
+        }
         return hasGetAccount() ? [hasGetAccount()] : []
       /** Return all accounts */
       } else {
@@ -152,28 +165,26 @@ export const hacAddAccount = (account: HAC_PREVIOUS_CONNECTION): void => {
 /**
  * [HAC] Remove an account
  * @param { string } account 
- * @param { string } [pwd] 
  * @returns boolean
  */
- export const hacRemoveAccount = (account: string, pwd?: string): boolean => {
+ export const hacRemoveAccount = (account: string): boolean => {
   try {
-    if(pwd && typeof(pwd) !== "string") throw new Error("Password need to be a string")
-    if(!pwd && typeof(hacPwd) !== "string") throw new Error("No Password yet")
     if(account && typeof(account) !== "string") throw new Error("Account is not a valid string")
+    if(hacAccounts.length === 0) throw new Error("No account in array")
 
-    /** if password OK */
-    if(hacCheckPwd(pwd ? pwd : hacPwd)) {
-      if(pwd) hacPwd = pwd
-      /** Decrypt Accounts */
-      const a = localStorage.getItem('hac') ? localStorage.getItem('hac') : undefined
-      hacAccounts = a ? JSON.parse(AES.decrypt(a, hacPwd).toString(CryptoJS.enc.Utf8)) : []
-      if(sessionStorage.getItem("hasmode"))  console.log('%c[HAC Accounts]', 'color: deeppink', hacAccounts)
-      const lycos = hacAccounts.findIndex(a => a.account === account)
-      hacAccounts.splice(lycos, 1)
-      return true
+    /** Search account index in array */
+    const lycos = hacAccounts.findIndex(a => a.account === account)
+    hacAccounts.splice(lycos, 1)
+
+    /** if no account in array delete localStorage */
+    if(hacAccounts.length === 0) {
+      localStorage.removeItem('hac')
     } else {
-      return false
-    }    
+      const enc = AES.encrypt(JSON.stringify(hacAccounts), hacPwd).toString()
+      const hmac = CryptoJS.HmacSHA256(enc, CryptoJS.SHA256(hacPwd)).toString()
+      localStorage.setItem('hac', hmac+enc)
+    }
+    return true   
   } catch (e) {
     if(sessionStorage.getItem("hasmode")) console.error(e)
     throw new Error("Something went wrong when tryin to remove the account")
@@ -216,7 +227,7 @@ export const hacCheckPwd = (pwd: string): boolean => {
 
 /**
  * HAC User Authentication
- * @param {string}       account - Hive User to connect
+ * @param { string }     account - Hive User to connect
  * @param { HAS_APP }    app - App
  * @param { string }     pwd - Password to use to encrypt localStorage
  * @param { string }     challenge - String to sign with Hive User private key 
@@ -234,7 +245,11 @@ export const hacUserAuth = (account: string, app: HAS_APP, pwd: string, challeng
     if(localStorage.getItem('hac')) {
       /** Retrieve account if known */
       const a = hacGetAccounts(account, pwd)
-      if(a.length === 1 && a[0].hkc) hacModule = "keychain"
+      if(a.length === 1 && a[0].hkc) {
+        hacModule = "keychain"
+      } else {
+        hacModule = "has"
+      }
     } else {
       if(pwd) hacPwd = pwd
     }

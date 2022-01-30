@@ -255,7 +255,7 @@ const recvAuthAck = (recv_msg: HAS_AUTH_ACK_MSG): void => {
 const recvAuthNack = (recv_msg: HAS_AUTH_NACK_MSG): void => {
   try {
     /** decode the encrypted data */
-    const data: unknown = JSON.parse(AES.decrypt(recv_msg.data, hasKey).toString(CryptoJS.enc.Utf8))
+    const data: unknown = AES.decrypt(recv_msg.data, hasKey).toString(CryptoJS.enc.Utf8)
     if(sessionStorage.getItem("hasmode")) console.log('%cHAS auth_nack => decoded data:', 'color: darkolivegreen', data)
     /** [HAC MSG] Emit a rejected Authentication msg if uuid encrypted match the uuid */
     if(recv_msg.uuid === data) hacMsg.next({

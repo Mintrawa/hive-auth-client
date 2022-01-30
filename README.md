@@ -118,16 +118,6 @@ hacMsg.subscribe({
 }
 ```
 
-
-### hacMsg.unsubscribe()
-
-Unsubscribe manually from the Observable
-
-```ts
-/** Unsubscribe results */
-hacMsg.unsubscribe()
-```
-
 ## Functions
 
 ### Main
@@ -193,16 +183,66 @@ hacGetAccounts()
     has_expire: number
     has_server: string
   },
-  hkc: boolean
+  hkc: boolean,
+  challenge: {
+    value: string
+    signature: string
+  }
 }]
 ```
+
+#### hacRemoveAccount()
+
+Remove an account from the storage
+
+##### Params
+
+- account: HIVE username to remove 
+
+##### Usage
+
+```ts
+import { hacRemoveAccount } from "@mintrawa/hive-auth-client"
+
+/**
+ * [HAC] Remove an account
+ * @param { string } account 
+ * @returns boolean
+ */
+hacRemoveAccount(mintrawa)
+```
+
+Return `true` or `false`
+
+#### hacCheckPwd()
+
+Check the validity of the string password used to encrypt the localStorage
+
+##### Params
+ 
+- pwd: string to encrypt the localStorage
+
+##### Usage
+
+```ts
+import { hacCheckPwd } from "@mintrawa/hive-auth-client"
+
+/**
+ * [HAC] Check password
+ * @param { string } pwd
+ * @returns boolean
+ */
+hacCheckPwd(mintrawa)
+```
+
+Return `true` or `false`
 
 #### hacUserAuth()
 
 Authentication of the HIVE user through the HAS or KBE
 
 ##### Params
-- `account`: HIVE user to connect
+- `account`: HIVE username to connect
 - `app`: HAS_APP<sup>*</sup> information
 - `pwd`: string to encrypt the localStorage
 - `challenge`: object with private `key_type` ("active"|"posting") to use and string to sign
@@ -224,7 +264,7 @@ import { hacUserAuth } from "@mintrawa/hive-auth-client"
 
 /**
  * HAC User Authentication
- * @param {string}       account - Hive User to connect
+ * @param { string }     account - Hive username to connect
  * @param { HAS_APP }    app - App
  * @param { string }     pwd - Password to use to encrypt localStorage
  * @param { string }     challenge - String to sign with Hive User private key 
@@ -241,7 +281,7 @@ hacUserAuth("mintrawa", { name: 'HACtutorial' }, "MyPa$$w0rd", { key_type: 'acti
   msg?: {
     status: "authentified"|"rejected"
     data?: {
-      challenge:    string
+      challenge:   string
       has_token?:  string
       has_expire?: number
       has_server?: string
@@ -305,6 +345,12 @@ In order to save time on the learning curve of the HIVE blockchain, some operati
 - hacConvert(amount: string, currency: "HIVE"|"HBD")
 - hacWitnessVote(witness: string, approve: boolean)
 - hacWitnessProxy(proxy: string)
+
+## Examples
+
+https://stackblitz.com/edit/angular-ivy-ew73hs
+
+https://github.com/Mintrawa/hac-tutorial
 
 ## Contributing
 
